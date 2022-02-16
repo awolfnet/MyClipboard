@@ -10,60 +10,73 @@ using static Component.ProtocolDataUnit;
 
 namespace Component
 {
-    public class Multicast: ITransit
+    public class Multicast : ITransit
     {
-        private IPAddress _address = null;
-        private IPEndPoint _endPoint = null;
-        private int _srcport = 0;
-        private int _dstport = 0;
+        private IPAddress _localAddress = null;
+        private IPEndPoint _localEndPoint = null;
+        private IPAddress _remoteAddress = null;
+        private IPEndPoint _remoteEndPoint = null;
 
         private UdpClient _udp = null;
-
-        private uint _syn = 1;
 
         private ThreadStart _recvThreadStart;
         private Thread _recvThread;
 
         public event EventHandler DataArrived;
 
-        public Multicast(string MulticastAddress, int DstPort)
+        public Multicast()
         {
-            Setup(MulticastAddress, null, DstPort);
+
         }
 
-        public Multicast(string MulticastAddress, int SrcPort, int DstPort)
+        public Multicast(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort)
         {
-            Setup(MulticastAddress, SrcPort, DstPort);
+            Setup(LocalAddress, SrcPort, MulticastAddress, DstPort);
         }
 
-        private void Setup(string MulticastAddress, int? SrcPort, int DstPort)
+        private void Setup(string MulticastAddress, int DstPort)
         {
-            _address = IPAddress.Parse(MulticastAddress);
-            _dstport = DstPort;
-            _endPoint = new IPEndPoint(_address, _dstport);
+            Setup(string.Empty, 0, MulticastAddress, DstPort);
+        }
 
-            if (SrcPort != null)
+        private void Setup(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort)
+        {
+            _remoteAddress = IPAddress.Parse(MulticastAddress);
+            _remoteEndPoint = new IPEndPoint(_remoteAddress, DstPort);
+
+            if (!string.IsNullOrWhiteSpace(LocalAddress))
             {
-                _srcport = (int)SrcPort;
-                _udp = new UdpClient(_srcport);
+                _localAddress = IPAddress.Parse(LocalAddress);
+            }
+
+            if (_localAddress != null)
+            {
+                _localEndPoint = new IPEndPoint(_localAddress, SrcPort);
             }
             else
             {
-                _udp = new UdpClient(_dstport);
+                _localEndPoint = new IPEndPoint(IPAddress.Any, SrcPort);
             }
+
+            _udp = new UdpClient(_localEndPoint);
 
             _udp.MulticastLoopback = false;
         }
-
-        public void Join(string MulticastAddress, int SrcPort, int DstPort)
+        public void Join(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort)
         {
-            Setup(MulticastAddress, SrcPort, DstPort);
+            Setup(LocalAddress, SrcPort, MulticastAddress, DstPort);
+            Join();
+        }
+
+        public void Join(string MulticastAddress, int DstPort)
+        {
+            Setup(string.Empty, 0, MulticastAddress, DstPort);
             Join();
         }
 
         public void Join()
         {
-            _udp.JoinMulticastGroup(_address);
+            _udp.JoinMulticastGroup(_remoteAddress);
 
             _recvThreadStart = new ThreadStart(RecvThread);
             _recvThread = new Thread(_recvThreadStart);
@@ -72,17 +85,21 @@ namespace Component
 
         private void RecvThread()
         {
-            IPEndPoint recvEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
-            byte[] buffer = _udp.Receive(ref recvEndPoint);
-
-            DataArrivedEventArgs args = new DataArrivedEventArgs()
+            while (true)
             {
-                Length = buffer.Length,
-                Data = buffer
-            };
+                IPEndPoint recvEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-            OnDataArrived(args);
+                byte[] buffer = _udp.Receive(ref recvEndPoint);
+
+                DataArrivedEventArgs args = new DataArrivedEventArgs()
+                {
+                    Length = buffer.Length,
+                    Data = buffer
+                };
+
+                OnDataArrived(args);
+            }
+
 
             //UdpClient client = new UdpClient(7788);
             //client.JoinMulticastGroup(IPAddress.Parse("234.5.6.7"));
@@ -97,7 +114,7 @@ namespace Component
 
         public int Send(byte[] Buffer)
         {
-            return _udp.Send(Buffer, Buffer.Length, _endPoint);
+            return _udp.Send(Buffer, Buffer.Length, _remoteEndPoint);
         }
 
         private void DataArrive()
@@ -108,6 +125,8 @@ namespace Component
         {
             DataArrived?.Invoke(this, e);
         }
+
+
     }
 
 

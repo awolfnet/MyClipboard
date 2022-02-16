@@ -16,6 +16,8 @@ namespace Component.Interface
     {
         event EventHandler DeviceDiscovered;
 
+        void Join(string LocalAddress, int SrcPort, string RemoteAddress, int DstPort);
+
         void Join(string Address, int Port);
 
         void Search();

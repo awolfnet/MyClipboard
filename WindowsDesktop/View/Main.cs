@@ -23,14 +23,14 @@ namespace WindowsDesktop.View
         private void button1_Click(object sender, EventArgs e)
         {
             group = Group.Instance;
-            group.Join("239.93.11.9", 31109);
+            group.Join("192.168.52.1", 0, "239.93.11.9", 31109);
             group.Search();
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            
+            group.Search();
         }
 
         private void Main_Load(object sender, EventArgs e)

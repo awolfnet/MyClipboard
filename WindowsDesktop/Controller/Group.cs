@@ -7,14 +7,14 @@ using System.Text;
 
 namespace WindowsDesktop.Controller
 {
-    public class Group: IGroup
+    public class Group : IGroup
     {
         private static volatile Group _instance = null;
         public static Group Instance
         {
             get
             {
-                if(_instance==null)
+                if (_instance == null)
                 {
                     _instance = new Group();
                 }
@@ -28,13 +28,17 @@ namespace WindowsDesktop.Controller
 
         private Group()
         {
-            
-        }
 
+        }
+        public void Join(string LocalAddress, int SrcPort, string RemoteAddress, int DstPort)
+        {
+            transit = new Multicast();
+            transit.Join(LocalAddress, SrcPort, RemoteAddress, DstPort);
+        }
         public void Join(string Address, int Port)
         {
-            transit = new Multicast(Address, Port);
-            transit.Join();
+            transit = new Multicast();
+            transit.Join(Address, Port);
         }
 
         public void Search()
@@ -52,6 +56,8 @@ namespace WindowsDesktop.Controller
         {
             throw new NotImplementedException();
         }
+
+
 
         //public int Send(HEADER header, string Message)
         //{

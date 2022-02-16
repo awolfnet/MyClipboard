@@ -16,7 +16,8 @@ namespace Component.Interface
     {
         event EventHandler DataArrived;
 
-        void Join(string MulticastAddress, int SrcPort, int DstPort);
+        void Join(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort);
+        void Join(string MulticastAddress, int DstPort);
 
         void Join();
         int Send(byte[] Buffer);
