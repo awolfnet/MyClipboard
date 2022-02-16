@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static Component.ProtocolDataUnit;
 
 namespace WindowsDesktop.Controller
 {
@@ -43,8 +44,17 @@ namespace WindowsDesktop.Controller
 
         public void Search()
         {
-            byte[] buffer = { 0x01, 0x02 };
-            transit.Send(buffer);
+            HEADER header;
+
+            header.Tag = ProtocolDataUnit.TAG;
+            header.Syn = 1;
+            header.Ack = 0;
+            header.Cmd = ProtocolDataUnit.Cmd.Search;
+            header.DataLength = 0;
+            header.DataChecksum = 0;
+            header.HeaderChecksum = 0;
+
+            transit.Send(header.ToBytes());
         }
 
         public void Sync()
@@ -53,6 +63,11 @@ namespace WindowsDesktop.Controller
         }
 
         public void Exit()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Announce()
         {
             throw new NotImplementedException();
         }

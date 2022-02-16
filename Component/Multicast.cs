@@ -117,10 +117,6 @@ namespace Component
             return _udp.Send(Buffer, Buffer.Length, _remoteEndPoint);
         }
 
-        private void DataArrive()
-        {
-
-        }
         protected virtual void OnDataArrived(DataArrivedEventArgs e)
         {
             DataArrived?.Invoke(this, e);

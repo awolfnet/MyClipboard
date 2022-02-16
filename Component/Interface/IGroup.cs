@@ -20,6 +20,8 @@ namespace Component.Interface
 
         void Join(string Address, int Port);
 
+        void Announce();
+
         void Search();
 
         void Sync();

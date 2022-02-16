@@ -8,6 +8,7 @@ namespace Component
 {
     public static class ProtocolDataUnit
     {
+        public const byte TAG = 0x11;
         public class Cmd
         {
             public const byte Search = 0x01;
