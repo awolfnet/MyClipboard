@@ -28,16 +28,27 @@ namespace WindowsDesktop.Controller
 
         private Group()
         {
-
+            transit = new Multicast();
+            transit.DataArrived += Transit_DataArrived;
         }
+
+        private void Transit_DataArrived(object sender, EventArgs e)
+        {
+            DataArrivedEventArgs eventArgs = (DataArrivedEventArgs)e;
+            ProtocolDataUnit.HEADER header = new ProtocolDataUnit.HEADER();
+            header.Parse(eventArgs.Data);
+
+            return;
+        }
+
         public void Join(string LocalAddress, int SrcPort, string RemoteAddress, int DstPort)
         {
-            transit = new Multicast();
+
             transit.Join(LocalAddress, SrcPort, RemoteAddress, DstPort);
         }
         public void Join(string Address, int Port)
         {
-            transit = new Multicast();
+
             transit.Join(Address, Port);
         }
 
