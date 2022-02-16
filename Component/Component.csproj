@@ -47,7 +47,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MulticastGroup.cs" />
+    <Compile Include="Interface\IGroup.cs" />
+    <Compile Include="Interface\ITransit.cs" />
+    <Compile Include="Model\Node.cs" />
+    <Compile Include="Multicast.cs" />
     <Compile Include="ProtocolDataUnit.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

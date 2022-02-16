@@ -8,11 +8,16 @@ namespace Component
 {
     public static class ProtocolDataUnit
     {
+        public class Cmd
+        {
+            public const byte Search = 0x01;
+        }
         public struct HEADER
         {
             public byte Tag;
             public uint Syn;
             public uint Ack;
+            public byte Cmd;
             public int DataLength;
             public ulong DataChecksum;
             public ulong HeaderChecksum;

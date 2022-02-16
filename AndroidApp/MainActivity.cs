@@ -49,7 +49,7 @@ namespace AndroidApp
             View view = (View) sender;
             Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong)
                 .SetAction("Action", (View.IOnClickListener)null).Show();
-            MulticastGroup group = new MulticastGroup("239.93.11.9", 31109);
+            Multicast group = new Multicast("239.93.11.9", 31109);
             group.Join();
             group.Send("BBBBBBB");
 
