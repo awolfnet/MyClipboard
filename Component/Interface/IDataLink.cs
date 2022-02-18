@@ -12,14 +12,12 @@ using System.Text;
 
 namespace Component.Interface
 {
-    public interface ITransit
+    public interface IDataLink
     {
-        event EventHandler DataArrived;
+        event EventHandler<DataArrivedEventArgs> DataArrived;
+        void JoinMulticastGroup(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort);
+        void DropMulticastGroup();
 
-        void Join(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort);
-        void Join(string MulticastAddress, int DstPort);
-
-        void Join();
         int Send(byte[] Buffer);
 
     }

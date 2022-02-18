@@ -1,5 +1,6 @@
 ﻿using Component;
 using Component.Interface;
+using Component.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ using static Component.ProtocolDataUnit;
 
 namespace WindowsDesktop.Controller
 {
-    public class Group : IGroup
+    public class Group
     {
-        private static volatile Group _instance = null;
+        private volatile static Group _instance = null;
         public static Group Instance
         {
             get
@@ -23,64 +24,37 @@ namespace WindowsDesktop.Controller
             }
         }
 
-        private ITransit transit = null;
+        private ITransport transport = null;
+        private Device _device = null;
 
-        public event EventHandler DeviceDiscovered;
+        public event EventHandler<DiscoveredEventArgs> Discovered;
 
         private Group()
         {
-            transit = new Multicast();
-            transit.DataArrived += Transit_DataArrived;
+            transport = new Transport(Transport.TransportType.Multicat);
         }
-
-        private void Transit_DataArrived(object sender, EventArgs e)
-        {
-            DataArrivedEventArgs eventArgs = (DataArrivedEventArgs)e;
-            ProtocolDataUnit.HEADER header = new ProtocolDataUnit.HEADER();
-            header.Parse(eventArgs.Data);
-
-            return;
-        }
-
         public void Join(string LocalAddress, int SrcPort, string RemoteAddress, int DstPort)
         {
-
-            transit.Join(LocalAddress, SrcPort, RemoteAddress, DstPort);
+            transport.Join(LocalAddress, SrcPort, RemoteAddress, DstPort);
         }
-        public void Join(string Address, int Port)
-        {
 
-            transit.Join(Address, Port);
+        public void Announce(string Name, string Platform, string IPAddress, int Port, Guid Guid)
+        {
+            _device = new Device()
+            {
+                Name = Name,
+                Platform = Platform,
+                IPAddress = IPAddress,
+                Port = Port,
+                Guid = Guid
+            };
+
+            transport.Announce(_device);
         }
 
         public void Search()
         {
-            HEADER header;
-
-            header.Tag = ProtocolDataUnit.TAG;
-            header.Syn = 1;
-            header.Ack = 0;
-            header.Cmd = ProtocolDataUnit.Cmd.Search;
-            header.DataLength = 0;
-            header.DataChecksum = 0;
-            header.HeaderChecksum = 0;
-
-            transit.Send(header.ToBytes());
-        }
-
-        public void Sync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Exit()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Announce()
-        {
-            throw new NotImplementedException();
+            transport.Search();
         }
 
 
@@ -111,5 +85,11 @@ namespace WindowsDesktop.Controller
 
         //    return sentBytes;
         //}
+    }
+
+    public class DiscoveredEventArgs : EventArgs
+    {
+        public Device Node { set; get; }
+        public DateTime Datetime { set; get; }
     }
 }

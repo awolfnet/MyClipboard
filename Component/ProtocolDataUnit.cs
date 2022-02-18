@@ -9,16 +9,19 @@ namespace Component
     public static class ProtocolDataUnit
     {
         public const byte TAG = 0x11;
-        public class Cmd
+        public class Opt
         {
             public const byte Search = 0x01;
+            public const byte Announce = 0x02;
+            public const byte Message = 0x03;
+            public const byte Blob = 0x04;
+            public const byte Ack = 0b1000000;
         }
         public struct HEADER
         {
             public byte Tag;
             public uint Syn;
-            public uint Ack;
-            public byte Cmd;
+            public byte Opt;
             public int DataLength;
             public ulong DataChecksum;
             public ulong HeaderChecksum;

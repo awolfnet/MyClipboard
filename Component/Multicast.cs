@@ -10,7 +10,7 @@ using static Component.ProtocolDataUnit;
 
 namespace Component
 {
-    public class Multicast : ITransit
+    public class Multicast : IDataLink
     {
         private IPAddress _localAddress = null;
         private IPEndPoint _localEndPoint = null;
@@ -22,7 +22,7 @@ namespace Component
         private ThreadStart _recvThreadStart;
         private Thread _recvThread;
 
-        public event EventHandler DataArrived;
+        public event EventHandler<DataArrivedEventArgs> DataArrived;
 
         public Multicast()
         {
@@ -32,11 +32,6 @@ namespace Component
         public Multicast(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort)
         {
             Setup(LocalAddress, SrcPort, MulticastAddress, DstPort);
-        }
-
-        private void Setup(string MulticastAddress, int DstPort)
-        {
-            Setup(string.Empty, 0, MulticastAddress, DstPort);
         }
 
         private void Setup(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort)
@@ -62,17 +57,6 @@ namespace Component
 
             _udp.MulticastLoopback = false;
         }
-        public void Join(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort)
-        {
-            Setup(LocalAddress, SrcPort, MulticastAddress, DstPort);
-            Join();
-        }
-
-        public void Join(string MulticastAddress, int DstPort)
-        {
-            Setup(string.Empty, 0, MulticastAddress, DstPort);
-            Join();
-        }
 
         public void Join()
         {
@@ -81,6 +65,18 @@ namespace Component
             _recvThreadStart = new ThreadStart(RecvThread);
             _recvThread = new Thread(_recvThreadStart);
             _recvThread.Start();
+        }
+
+
+        public void JoinMulticastGroup(string LocalAddress, int SrcPort, string MulticastAddress, int DstPort)
+        {
+            Setup(LocalAddress, SrcPort, MulticastAddress, DstPort);
+            Join();
+        }
+
+        public void DropMulticastGroup()
+        {
+            _udp.DropMulticastGroup(_remoteAddress);
         }
 
         private void RecvThread()
@@ -117,11 +113,10 @@ namespace Component
             return _udp.Send(Buffer, Buffer.Length, _remoteEndPoint);
         }
 
-        protected virtual void OnDataArrived(DataArrivedEventArgs e)
+        private void OnDataArrived(DataArrivedEventArgs e)
         {
             DataArrived?.Invoke(this, e);
         }
-
 
     }
 

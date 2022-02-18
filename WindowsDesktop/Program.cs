@@ -15,6 +15,10 @@ namespace WindowsDesktop
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            Controller.Group group = Controller.Group.Instance;
+            Controller.Clipboard clipboard = Controller.Clipboard.Instance;
+
             Application.Run(new View.Main());
         }
     }
