@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="Interface\IDataLink.cs" />
     <Compile Include="Interface\ITransport .cs" />
-    <Compile Include="Model\Node.cs" />
+    <Compile Include="Model\Device.cs" />
     <Compile Include="Multicast.cs" />
     <Compile Include="ProtocolDataUnit.cs" />
     <Compile Include="Resources\Resource.designer.cs" />

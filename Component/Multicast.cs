@@ -83,10 +83,13 @@ namespace Component
         {
             while (true)
             {
-                IPEndPoint recvEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                IPEndPoint recvEndPoint = null;
 
-                byte[] buffer = _udp.Receive(ref recvEndPoint);
+                //byte[] buffer = _udp.Receive(ref recvEndPoint);
 
+                UdpClient receivingUdpClient = new UdpClient(31109);
+                receivingUdpClient.JoinMulticastGroup(_remoteAddress);
+                Byte[] buffer = receivingUdpClient.Receive(ref recvEndPoint);
                 DataArrivedEventArgs args = new DataArrivedEventArgs()
                 {
                     Length = buffer.Length,
